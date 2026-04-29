@@ -144,9 +144,49 @@
     - **Store 實例**：統一為 `xxxStore` (小駝峰)，例如 `const authStore = useAuthStore()`。
     - **外部工具/插件實例**：統一使用 `$` 前綴，例如 `$notify`、`$api`、`$ajax`。
 
+## 8. 環境適配與 SSR 安全規範 (Environment Safety)
+
+**判定原則**：本章節僅適用於 Nuxt 3 或 SSR 專案。若為 Vite/Vue CLI 之純 SPA 專案，可忽略此標籤限制。
+
+- **[SSR] 環境判定**：
+  在生命週期鉤子（如 `onMounted`）之外存取瀏覽器特有 API（`window`, `localStorage` 等）時，必須包覆於 `if (process.client)`。
+    - **原因**：避免 Node.js 執行環境因找不到瀏覽器物件而崩潰。
+
+- **[SSR] 組件隔離**：
+  若組件涉及非同步 Client 渲染套件（如地圖、圖表）或大量 DOM 操作，請使用 `<ClientOnly>` 包裹。
+
+- **通用替代方案 (Composables)**：
+  建議優先使用 `@vueuse/core` 的 `useStorage` 代替原生 `localStorage`。這類工具庫通常已內建環境判定，能同時兼容 SPA 與 SSR，減少手寫 `if (process.client)` 的次數。
+
+## 9. 邏輯封裝與響應性規範 (Logic & Reactivity)
+
+- **Pinia 實作慣例**：
+    - **定義風格**：統一採用 `defineStore('id', () => { ... })` 的 Setup Store 寫法。
+    - **響應性解構**：從 Store 解構狀態時，必須使用 `storeToRefs()` 以避免響應性丟失；方法 (Actions) 則直接解構。
+- **Factory Function (Composable) 規範**：
+    - 鼓勵使用 Factory Function 回傳多個相關函式（如 `useLineAuth.ts`）來提高內聚力。
+    - **命名慣例**：必須以 `use` 開頭，且內部狀態需保持封裝。
+
+## 10. 註解與代碼說明規範 (Documentation)
+
+- **JSDoc 語言**：一律使用繁體中文。
+- **註解哲學**：
+    - **禁止描述行為**：不要寫 `// 如果是客戶端就執行`。
+    - **強制描述意圖**：必須解釋「決策原因」或「業務邏輯背景」。例如：`// 為了避開 SSR 渲染時的 Hydration Mismatch，此處強制 client 執行。`
+    - **區塊分隔**：在 `<template>` 中使用特定的註解分隔線，例如：`<!-- ======== 區塊名稱 ======== -->`。
+
+## 11. 檔案組織與模板結構補充 (File Organization)
+
+- **模板區塊化**：大型組件應使用註解分隔線進行視覺分割，便於開發者快速定位代碼。
+- **TypeScript 嚴格檢查**：
+    - 所有 API 回傳值必須在 `myApi.ts` 中定義 Interface。
+    - **禁止使用 `any`**，若型別不確定應使用 `unknown`。
+
 ### 檢查清單 (AI Review 用)
 
 - [ ] 是否完全避免了 `v-if` 與 `v-for` 寫在同一標籤？
 - [ ] 所有 `v-for` 是否都有綁定 `:key`？
 - [ ] 外部套件是否皆以 `$` 開頭命名 (如 `$notify`)？
 - [ ] 是否在組件內部使用了 `handle*` 命名本地處理函式？
+- [ ] [註解] 是否存在「解釋做什麼」的冗餘註解？
+- [ ] [Reactivity] Pinia 解構是否正確使用了 storeToRefs？
