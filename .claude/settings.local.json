@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Remove-Item \"f:\\\\claude\\\\SKILL.md\" -Force)",
+      "Bash(Remove-Item \"f:\\\\claude\\\\CLAUDE-react.md\" -Force)",
+      "Bash(Remove-Item \"f:\\\\claude\\\\references\\\\check-rules.md\" -Force)",
+      "Bash(Remove-Item \"f:\\\\claude\\\\scripts\\\\scan_url.sh\" -Force)",
+      "Bash(Remove-Item \"f:\\\\claude\\\\scripts\\\\scan_code.sh\" -Force)",
+      "PowerShell(Get-ChildItem \"f:\\\\claude\" -Recurse | Where-Object { !$_.FullName.Contains\\('.git'\\) } | Select-Object FullName | ForEach-Object { $_.FullName.Replace\\('f:\\\\claude\\\\', ''\\) })"
+    ]
+  }
+}
