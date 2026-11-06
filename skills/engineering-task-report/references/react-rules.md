@@ -9,21 +9,18 @@
 
 ## 2. 樣式規範（Tailwind CSS v4+）
 
-- 所有 class 必須加 `tw:` 前綴
-  - 正確：`<div className="tw:flex tw:items-center tw:p-4">`
-  - 錯誤：`<div className="flex items-center">`
 - 注意：React 用 `className`，不是 `class`
 - 單一標籤 Tailwind class **超過 6 個** → 抽成獨立變數或元件
 - 條件樣式使用 `clsx` 或 `cn()`
 
 ```tsx
 // ✅ class 過多時抽成變數
-const cardClass = "tw:p-6 tw:bg-white tw:shadow-lg tw:rounded-xl tw:border tw:border-gray-200 tw:hover:shadow-xl"
+const cardClass = "p-6 bg-white shadow-lg rounded-xl border border-gray-200 hover:shadow-xl"
 <div className={cardClass}>...</div>
 
 // ✅ 條件樣式用 clsx
 import { clsx } from 'clsx'
-<button className={clsx('tw:px-4 tw:py-2', isActive && 'tw:bg-blue-500', !isActive && 'tw:bg-gray-300')}>
+<button className={clsx('px-4 py-2', isActive && 'bg-blue-500', !isActive && 'bg-gray-300')}>
 ```
 
 ## 3. 元件規範
@@ -130,7 +127,7 @@ export const fetchUser = async (id: string): Promise<User> => {
 
 ```tsx
 {/* [TODO: ICON] 此處需要「關閉」圖示，請補上對應 SVG */}
-<span className="tw:icon-placeholder">[關閉圖示]</span>
+<span className="icon-placeholder">[關閉圖示]</span>
 ```
 
 ## 8. 命名慣例
@@ -173,7 +170,6 @@ src/
 
 ### 檢查清單（AI Review 用）
 
-- [ ] Tailwind class 是否皆有 `tw:` 前綴？
 - [ ] 是否出現 Class Component？
 - [ ] `.map()` 是否都有唯一的 `key`（非 index）？
 - [ ] Hooks 是否都在最頂層呼叫？

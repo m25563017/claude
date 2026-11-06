@@ -46,7 +46,6 @@ description: >
 - [ ] 所有 `v-for` 是否都有綁定 `:key`？
 - [ ] 是否誤用 `provide` / `inject`？
 - [ ] 是否使用原生 `alert()`（應改用 `$notify`）？
-- [ ] Tailwind class 是否皆有 `tw:` 前綴？
 - [ ] 外部套件是否皆以 `$` 開頭命名？
 - [ ] 是否有使用 `any` 型別？
 - [ ] Pinia 解構是否正確使用了 `storeToRefs`？
@@ -55,7 +54,6 @@ description: >
 
 #### React / Next.js 專項（`references/react-rules.md`）
 
-- [ ] 所有 Tailwind class 是否都有 `tw:` 前綴？
 - [ ] 是否使用了 `class` 而非 `className`？
 - [ ] 是否出現 Class Component（`extends React.Component`）？
 - [ ] `.map()` 是否都有唯一的 `key`（禁止用 index）？
@@ -107,6 +105,6 @@ description: >
 
 1. **如實回報** — 若有違規項目，誠實列出，不要掩蓋
 2. **給出修復建議** — 發現違規時，同時提供正確的改法
-3. **高頻違規優先** — `tw:` 前綴、`key` 使用、`any` 型別是最常出現的問題
+3. **高頻違規優先** — `key` 使用、`any` 型別是最常出現的問題
 4. **用繁體中文輸出** — 報告語言與使用者一致
 5. **詳細規則參考** — 各規範細節請見 `references/` 目錄下的對應文件

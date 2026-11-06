@@ -10,9 +10,6 @@
 ## 2. 樣式規範 (Tailwind CSS v4+)
 
 - **版本**：Tailwind CSS v4 以上。
-- **前綴規則**：所有 Tailwind 類名必須加上 `tw:` 前綴。
-    - 正確範例：`<div class="tw:flex tw:items-center tw:p-4">`。
-    - 錯誤範例：`<div class="flex items-center">`。
 
 ## 3. 通知與彈窗規範 (Notification)
 
@@ -56,9 +53,6 @@
     - 是否誤用 `provide/inject`
     - 是否使用原生 `alert()`
 
-- **Tailwind 檢查**
-    - class 是否皆有 `tw:` 前綴
-
 ## 6. Vue 模板與命名規範
 
 ### 6.1 組件結構順序
@@ -82,7 +76,7 @@
 結合 **BEM 簡化版** 與 **Functional CSS** 的優勢：
 
 - **命名慣例**：
-    - 採用 **kebab-case** (連字元命名法)，以與 JavaScript 的 camelCase 及 Tailwind 的前綴邏輯進行視覺區隔。
+    - 採用 **kebab-case** (連字元命名法)，以與 JavaScript 的 camelCase 進行視覺區隔。
 - **核心規則**：
     - **重要容器 (Key Container)**：必須具備語義化的類名。
     - **位置順序**：語義化類名必須作為 `class` 屬性中的**第一個項目**，其後才接續 Tailwind 類名。
@@ -91,15 +85,15 @@
 
 | 類別 | 說明與範例 |
 | **必須命名** | 頁面最外層佈局容器 (Layout Wrappers)、具獨立功能的組件主體 (Component Roots)、複雜表單或大型資料清單的包覆層。 |
-| **不需命名** | 僅為了排版存在的輔助層 (如 `tw:flex` 中繼層)、單純的文字裝飾標籤 (如 `span`, `b`)。 |
+| **不需命名** | 僅為了排版存在的輔助層 (如 `flex` 中繼層)、單純的文字裝飾標籤 (如 `span`, `b`)。 |
 
 #### **正確範例**：
 
 ```vue
 <template>
-    <section class="main-content-wrapper tw:flex tw:flex-col tw:min-h-screen">
-        <div class="user-profile-card tw:p-6 tw:bg-white tw:shadow-lg">
-            <h2 class="tw:text-xl">{{ userName }}</h2>
+    <section class="main-content-wrapper flex flex-col min-h-screen">
+        <div class="user-profile-card p-6 bg-white shadow-lg">
+            <h2 class="text-xl">{{ userName }}</h2>
         </div>
     </section>
 </template>
@@ -135,9 +129,9 @@
 ```
 
 - **事件命名與回調 (Callback)**
-    - **Props 接收的事件**：使用 `on*` 前綴 (例如：`onClose`, `onConfirm`)。
+    - **往上傳事件**：一律用 `emits`（例如 `emit('close')`），父層用 `@close` 監聽；不要把 callback 當 props 傳入（`on*` 前綴寫法只用於 React）。
     - **內部處理函式**：使用 `handle*` 前綴 (例如：`handleDeleteClick`, `handleSubmit`)。
-      _註：這能幫 AI 區分「傳進來的 function」與「組件內部定義的 function」。_
+      _註：這能幫 AI 區分「組件內部的處理函式」與「emit 出去的事件名稱」。_
 - **v-model 更新事件**
     - 統一使用 `@update:modelValue` 或 `@update:propertyName` 模式。
 - **變數與 Store 命名慣例**
