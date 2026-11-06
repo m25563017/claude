@@ -111,6 +111,11 @@ SENSITIVE_PATHS=(
   "/package.json"
   "/wp-login.php"
   "/composer.json"
+  "/database.sql"
+  "/db_backup.sql"
+  "/dump.sql"
+  "/api/users"
+  "/swagger/v1/swagger.json"
 )
 
 for path in "${SENSITIVE_PATHS[@]}"; do

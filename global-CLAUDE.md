@@ -10,14 +10,6 @@
 - 永遠使用台北時間（Asia/Taipei, UTC+8）
 - 日期計算、時間戳記、檔案命名的執行操作前先 `date` 確認系統時間
 
-## 可用 Skills
+## Skills
 
-以下 Skills 設定在 `skills/` 中，請根據使用者情境主動判斷並觸發：
-
-| Skill | 觸發時機 |
-|-------|---------|
-| `web-security-scan` | 上線前安全檢查、提到 XSS / CSRF / SQL Injection / 漏洞掃描 |
-| `engineering-task-report` | Vue3 任務完成收尾、產出工程回報、Vue3 規範自檢 |
-| `react-engineering-report` | React / Next.js 任務完成收尾、產出工程回報、React 規範自檢 |
-
-各框架詳細規範定義在對應 Skill 的 `references/` 目錄中，執行任務時請同步參考。
+我的常用 Skills 已安裝在 `~/.claude/skills/`，會依各自的 description 自動觸發，這裡不需要重複列觸發條件。

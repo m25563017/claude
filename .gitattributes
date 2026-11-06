@@ -1,0 +1,2 @@
+# Shell 腳本固定用 LF，避免在 Windows 被 autocrlf 轉成 CRLF 後 bash 無法執行
+*.sh text eol=lf

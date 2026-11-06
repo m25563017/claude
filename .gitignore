@@ -1,4 +1,7 @@
 /upload
 /vendor
-/.env
-*exe
+.env
+*.exe
+
+# Claude Code 本機設定（每台電腦不同，不納入版控）
+.claude/settings.local.json

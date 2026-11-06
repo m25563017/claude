@@ -22,8 +22,9 @@
 
 ## 4. 框架特定規範
 
-- **Vue3**：參考 `vue3-rules.md`。
-- **其他框架**：未來可添加對應文件，如 `react-rules.md`、`node-rules.md`。
+- **Vue3 / Nuxt3**：參考 `vue3-rules.md`。
+- **React / Next.js**：參考 `react-rules.md`。
+- **其他框架**：新增對應文件，如 `python-rules.md`、`node-rules.md`，並在 `SKILL.md` 的框架對照表加一列。
 
 ## 5. 報告與回顧標準
 

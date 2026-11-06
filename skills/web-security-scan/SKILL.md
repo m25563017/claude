@@ -42,7 +42,7 @@ description: >
 
 #### 2A：URL 遠端掃描（有提供 URL 時）
 
-執行 `scripts/scan_url.sh <URL>`，此腳本會：
+執行 `bash "${CLAUDE_SKILL_DIR}/scripts/scan_url.sh" <URL>`，此腳本會：
 - 抓取 HTTP Response Headers 並分析安全設定
 - 測試常見敏感路徑是否可存取
 - 確認 HTTPS/SSL 是否正確配置
@@ -50,7 +50,7 @@ description: >
 
 #### 2B：程式碼靜態分析（有提供程式碼時）
 
-執行 `scripts/scan_code.sh <file_or_dir>`，此腳本會：
+執行 `bash "${CLAUDE_SKILL_DIR}/scripts/scan_code.sh" <file_or_dir>`，此腳本會：
 - 搜尋 API Key / 密碼等敏感字串
 - 偵測危險的 innerHTML / eval / document.write 使用
 - 找出未過濾的使用者輸入
@@ -62,7 +62,8 @@ description: >
 npm audit --json 2>/dev/null || true
 ```
 
-若無法執行 npm，改用靜態版本比對（見 `references/known-vulnerable-packages.md`）。
+若無法執行 npm，改為讀取 `package.json` 列出依賴與版本，並在報告中提醒使用者自行執行 `npm audit`
+（漏洞資料會隨時間更新，不在 Skill 內維護靜態清單）。
 
 ### Step 3：整合結果並輸出報告
 

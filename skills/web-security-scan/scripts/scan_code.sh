@@ -19,14 +19,14 @@ echo ""
 
 # 如果是目錄，掃描所有 JS/HTML/TS 檔案
 if [ -d "$TARGET" ]; then
-  FILES=$(find "$TARGET" -type f \( -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" -o -name "*.html" -o -name "*.vue" \) \
+  FILES=$(find "$TARGET" -type f \( -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" -o -name "*.html" -o -name "*.vue" -o -name "*.php" -o -name "*.py" -o -name "*.go" -o -name "*.java" \) \
     ! -path "*/node_modules/*" ! -path "*/.git/*" ! -path "*/dist/*" ! -path "*/build/*" 2>/dev/null)
 else
   FILES="$TARGET"
 fi
 
 if [ -z "$FILES" ]; then
-  echo "⚠️  找不到可分析的 JS/HTML/TS 檔案"
+  echo "⚠️  找不到可分析的程式碼檔案"
   exit 0
 fi
 
@@ -42,18 +42,27 @@ echo "--- CODE_ANALYSIS_START ---"
 echo ""
 echo "## 敏感資料外洩檢查"
 
+# 規則本身含有 ":"（例如 [:=]），所以欄位改用 "@@" 分隔：規則@@嚴重度@@說明
+split_entry() {
+  local entry="$1" rest
+  pattern="${entry%%@@*}"
+  rest="${entry#*@@}"
+  severity="${rest%%@@*}"
+  description="${rest#*@@}"
+}
+
 PATTERNS=(
-  "api[_-]?key\s*[:=]\s*['\"][a-zA-Z0-9]{16,}:Critical:API Key 硬編碼在前端"
-  "secret\s*[:=]\s*['\"][^'\"]{8,}:Critical:Secret 硬編碼在前端"
-  "password\s*[:=]\s*['\"][^'\"]{4,}:Critical:密碼硬編碼在前端"
-  "sk-[a-zA-Z0-9]{32,}:Critical:OpenAI API Key 疑似外洩"
-  "AIza[a-zA-Z0-9]{35}:High:Google API Key 疑似外洩"
-  "AKIA[0-9A-Z]{16}:Critical:AWS Access Key 疑似外洩"
-  "token\s*[:=]\s*['\"][a-zA-Z0-9\-_]{20,}:High:Token 硬編碼（請確認是否為測試用）"
+  "api[_-]?key\s*[:=]\s*['\"][a-zA-Z0-9]{16,}@@Critical@@API Key 硬編碼在前端"
+  "secret\s*[:=]\s*['\"][^'\"]{8,}@@Critical@@Secret 硬編碼在前端"
+  "password\s*[:=]\s*['\"][^'\"]{4,}@@Critical@@密碼硬編碼在前端"
+  "sk-[a-zA-Z0-9]{32,}@@Critical@@OpenAI API Key 疑似外洩"
+  "AIza[a-zA-Z0-9]{35}@@High@@Google API Key 疑似外洩"
+  "AKIA[0-9A-Z]{16}@@Critical@@AWS Access Key 疑似外洩"
+  "token\s*[:=]\s*['\"][a-zA-Z0-9\-_]{20,}@@High@@Token 硬編碼（請確認是否為測試用）"
 )
 
 for pattern_entry in "${PATTERNS[@]}"; do
-  IFS=':' read -r pattern severity description <<< "$pattern_entry"
+  split_entry "$pattern_entry"
   while IFS= read -r file; do
     MATCHES=$(grep -niE "$pattern" "$file" 2>/dev/null || true)
     if [ -n "$MATCHES" ]; then
@@ -110,6 +119,31 @@ while IFS= read -r file; do
 done <<< "$FILES"
 
 # ──────────────────────────────────────────
+# 2.5. 後端 SQL 注入風險初步檢查 (SQLi)
+# ──────────────────────────────────────────
+echo ""
+echo "## 資料庫 SQL 注入風險檢查"
+
+SQL_PATTERNS=(
+  "(SELECT|INSERT|UPDATE|DELETE).*WHERE.*\s*\+\s*[a-zA-Z0-9_]+@@High@@SQL 語法疑似使用字串拼接，有 SQLi 風險"
+  "mysql_query\(.*\\\$@@High@@使用已被棄用且危險的 mysql_query"
+  "exec\(\s*['\"].*\\\$.*@@High@@系統指令執行 (Command Injection) 風險"
+)
+
+for pattern_entry in "${SQL_PATTERNS[@]}"; do
+  split_entry "$pattern_entry"
+  while IFS= read -r file; do
+    MATCHES=$(grep -niE "$pattern" "$file" 2>/dev/null || true)
+    if [ -n "$MATCHES" ]; then
+      while IFS= read -r match; do
+        LINE=$(echo "$match" | cut -d: -f1)
+        echo "FAIL|SQL_INJECTION|$severity|$file:$LINE — $description"
+      done <<< "$MATCHES"
+    fi
+  done <<< "$FILES"
+done
+
+# ──────────────────────────────────────────
 # 3. console.log 洩漏
 # ──────────────────────────────────────────
 echo ""
@@ -153,7 +187,7 @@ echo "## CSRF 防護檢查"
 
 while IFS= read -r file; do
   if [[ "$file" == *.html ]]; then
-    POST_FORMS=$(grep -n 'method=["\']post["\']' "$file" 2>/dev/null || true)
+    POST_FORMS=$(grep -niE "method=[\"']post[\"']" "$file" 2>/dev/null || true)
     if [ -n "$POST_FORMS" ]; then
       CSRF_TOKEN=$(grep -i "csrf\|_token\|csrftoken" "$file" 2>/dev/null || true)
       if [ -z "$CSRF_TOKEN" ]; then
